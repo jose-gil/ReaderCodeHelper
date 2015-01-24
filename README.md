@@ -1,7 +1,5 @@
 # ReaderCodeHelper
 
-[![CI Status](http://img.shields.io/travis/Jose Gil/ReaderCodeHelper.svg?style=flat)](https://travis-ci.org/jose-gil/ReaderCodeHelper)
-
 ## What is this 
 
 This is a helper code for educational purposes and only has the basic elements of CocoaPod Library. 
