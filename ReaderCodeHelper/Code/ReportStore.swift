@@ -10,47 +10,24 @@ import UIKit
 
 public class ReportStore {
     
-    // MARK: Properties
+    // MARK: - Properties
 
-    private class var sharedInstance: ReportStore {
-        struct Singleton {
-            static let instance: ReportStore = ReportStore()
-        }
-        return Singleton.instance
-    }
-
-    private var _reports:[Report] = []
-
-    // MARK: Lifecycle
-
-    init() {
-        populateReports()
-    }
-    
-    // MARK: Private
-
-    private func populateReports () {
-        if let path = NSBundle(forClass: Report.self).pathForResource("Reports", ofType: "plist") {
+    private class var reports: [Report] {
+        if let path = NSBundle(forClass: ReportStore.self).pathForResource("Reports", ofType: "plist") {
             if let items = NSPropertyListSerialization.propertyListFromData(NSData(contentsOfFile: path)!, mutabilityOption: NSPropertyListMutabilityOptions.Immutable, format: nil, errorDescription: nil) as? [[String : String]] {
-                for item in items {
-                    if let report = Report(dictionary: item) {
-                        self._reports.append(report)
-                    }
-                }
+                return items.map { Report(dictionary: $0) }
             }
         }
+        return []
     }
     
-    // MARK: Public
+    // MARK: - Public
 
     public class func allReports () -> [Report] {
-        return sharedInstance._reports
+        return reports
     }
     
     public class func favoriteReports () -> [Report] {
-        return sharedInstance._reports.filter {
-            $0.favorite == true
-        }
+        return reports.filter { $0.favorite == true }
     }
-    
 }
