@@ -11,23 +11,30 @@ import UIKit
 public class ReportStore {
     
     // MARK: - Properties
-
-    private class var reports: [Report] {
+    
+    private class var sharedInstance: ReportStore {
+        struct Singleton {
+            static let instance: ReportStore = ReportStore()
+        }
+        return Singleton.instance
+    }
+    
+    private let reports: [Report] = {
         if let path = NSBundle(forClass: ReportStore.self).pathForResource("Reports", ofType: "plist") {
             if let items = NSPropertyListSerialization.propertyListFromData(NSData(contentsOfFile: path)!, mutabilityOption: NSPropertyListMutabilityOptions.Immutable, format: nil, errorDescription: nil) as? [[String : String]] {
                 return items.map { Report(dictionary: $0) }
             }
         }
         return []
-    }
+        }()
     
     // MARK: - Public
-
+    
     public class func allReports () -> [Report] {
-        return reports
+        return sharedInstance.reports
     }
     
     public class func favoriteReports () -> [Report] {
-        return reports.filter { $0.favorite == true }
+        return sharedInstance.reports.filter { $0.favorite == true }
     }
 }
