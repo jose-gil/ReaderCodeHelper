@@ -25,65 +25,65 @@ public class Report {
         }
     }
     
-    // MARK: - Properties
+    // MARK: Properties
     
-    public var identifier: String = ""
-    public var header: String = ""
-    public var body: String = ""
+    public var identifier: String?
+    public var header: String?
+    public var body: String?
     
     private var _favorite: Bool?
     public var favorite: Bool {
         get {
+            guard let identifier = identifier else { return false }
+            
             if let favorite = _favorite {
                 return favorite;
             }
             
-            _favorite = loadFavoriteFromUserDefaults(identifier)
-            return _favorite!;
+            if let favorites = NSUserDefaults.standardUserDefaults().objectForKey(Constants.UserDefaultsKey.Favorites) as? [String] {
+                return favorites.contains(identifier)
+            }
+            
+            return false
         }
         set {
+            guard let identifier = identifier else { return }
+            
             _favorite = newValue ?? false
-            saveFavoriteToUserDefaults(identifier, value:newValue)
+
+            var favorites = NSUserDefaults.standardUserDefaults().objectForKey(Constants.UserDefaultsKey.Favorites) as? [String] ?? []
+            if let index = favorites.indexOf(identifier) {
+                if !_favorite! {
+                    favorites.removeAtIndex(index)
+                }
+            } else {
+                if _favorite! {
+                    favorites.append(identifier)
+                }
+            }
+            NSUserDefaults.standardUserDefaults().setObject(favorites, forKey: Constants.UserDefaultsKey.Favorites)
+            NSUserDefaults.standardUserDefaults().synchronize()
+            
             notifyUpdate()
         }
     }
+   
+    // MARK: Lifecycle
     
-    // MARK: - Private
-    
-    private func loadFavoriteFromUserDefaults(identifier:String) -> Bool {
-        if let favorites = NSUserDefaults.standardUserDefaults().objectForKey(Constants.UserDefaultsKey.Favorites) as? [String] {
-            return contains(favorites, identifier)
+    required public init?(dictionary: [String : String])
+    {
+        if dictionary[Constants.DictonaryKey.Identifier] == nil {
+            return nil
         }
-        return false
+
+        identifier = dictionary[Constants.DictonaryKey.Identifier]
+        header = dictionary[Constants.DictonaryKey.Header] ?? ""
+        body = dictionary[Constants.DictonaryKey.Body] ?? ""
     }
-    
-    private func saveFavoriteToUserDefaults(identifier:String, value:Bool) {
-        var favorites = NSUserDefaults.standardUserDefaults().objectForKey(Constants.UserDefaultsKey.Favorites) as? [String] ?? []
-        if let index = find(favorites, identifier) {
-            if !value {
-                favorites.removeAtIndex(index)
-            }
-        } else {
-            if value {
-                favorites.append(identifier)
-            }
-        }
-        NSUserDefaults.standardUserDefaults().setObject(favorites, forKey: Constants.UserDefaultsKey.Favorites)
-        NSUserDefaults.standardUserDefaults().synchronize()
-    }
+
+    // MARK: Private
     
     private func notifyUpdate () {
         NSNotificationCenter.defaultCenter().postNotificationName(Notification.FavoriteUpdate, object: self)
     }
-    
-    // MARK: - Lifecycle
-    
-    init(dictionary: [String : String])
-    {
-        identifier = dictionary[Constants.DictonaryKey.Identifier] ?? ""
-        header = dictionary[Constants.DictonaryKey.Header] ?? ""
-        body = dictionary[Constants.DictonaryKey.Body] ?? ""
-    }
-    
-    
 }

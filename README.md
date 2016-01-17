@@ -7,10 +7,10 @@ This is a helper code for educational purposes and only has the basic elements o
 ## Installation
 
 'ReaderCodeHelper' is now available through the dependency manager [CocoaPods](http://cocoapods.org). 
-You do have to use cocoapods version 0.36. At this moment this can be installed as a pre release by executing:
+You do have to use cocoapods version. At this moment this can be installed executing:
 
 ```
-[sudo] gem install cocoapods --pre
+[sudo] gem install cocoapods
 ```
 
 If you have installed cocoapods version 0.36 or later, then you can just add 'ReaderCodeHelper'  to your workspace by adding the folowing line to your Podfile:
