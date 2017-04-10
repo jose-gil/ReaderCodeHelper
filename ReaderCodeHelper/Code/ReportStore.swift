@@ -11,9 +11,9 @@ import UIKit
 public class ReportStore {
     
     private static let reports:[Report] = {
-        if let path  = NSBundle(forClass: Report.self).pathForResource("Reports", ofType: "plist"),
-            data = NSData(contentsOfFile: path),
-            items = try? NSPropertyListSerialization.propertyListWithData(data, options: .Immutable, format: nil) as? [[String:String]] {
+        if let path  = Bundle(for: Report.self).path(forResource: "Reports", ofType: "plist"),
+            let data = NSData(contentsOfFile: path),
+            let items = try? PropertyListSerialization.propertyList(from: data as Data, options: [], format: nil) as? [[String:String]] {
                 var result:[Report] = []
                 for item in items! {
                     if let report = Report(dictionary: item) {

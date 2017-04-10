@@ -40,7 +40,7 @@ public class Report {
                 return favorite;
             }
             
-            if let favorites = NSUserDefaults.standardUserDefaults().objectForKey(Constants.UserDefaultsKey.Favorites) as? [String] {
+            if let favorites = UserDefaults.standard.object(forKey: Constants.UserDefaultsKey.Favorites) as? [String] {
                 return favorites.contains(identifier)
             }
             
@@ -49,20 +49,20 @@ public class Report {
         set {
             guard let identifier = identifier else { return }
             
-            _favorite = newValue ?? false
+            _favorite = newValue 
 
-            var favorites = NSUserDefaults.standardUserDefaults().objectForKey(Constants.UserDefaultsKey.Favorites) as? [String] ?? []
-            if let index = favorites.indexOf(identifier) {
+            var favorites = UserDefaults.standard.object(forKey: Constants.UserDefaultsKey.Favorites) as? [String] ?? []
+            if let index = favorites.index(of: identifier) {
                 if !_favorite! {
-                    favorites.removeAtIndex(index)
+                    favorites.remove(at: index)
                 }
             } else {
                 if _favorite! {
                     favorites.append(identifier)
                 }
             }
-            NSUserDefaults.standardUserDefaults().setObject(favorites, forKey: Constants.UserDefaultsKey.Favorites)
-            NSUserDefaults.standardUserDefaults().synchronize()
+            UserDefaults.standard.set(favorites, forKey: Constants.UserDefaultsKey.Favorites)
+            UserDefaults.standard.synchronize()
             
             notifyUpdate()
         }
@@ -84,6 +84,6 @@ public class Report {
     // MARK: Private
     
     private func notifyUpdate () {
-        NSNotificationCenter.defaultCenter().postNotificationName(Notification.FavoriteUpdate, object: self)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: Notification.FavoriteUpdate), object: self)
     }
 }
